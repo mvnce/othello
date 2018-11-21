@@ -1,15 +1,14 @@
 from board import Board
 
-WIDTH = 600
-HEIGHT = 600
+BOARD_LENGTH = 600
 
 SIZE = 4
 
-board = Board(WIDTH, HEIGHT, SIZE)
+board = Board(BOARD_LENGTH, SIZE)
 
 
 def setup():
-    size(WIDTH, HEIGHT)
+    size(BOARD_LENGTH, BOARD_LENGTH)
     colorMode(RGB, 1)
 
 
