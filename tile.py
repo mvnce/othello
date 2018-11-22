@@ -1,4 +1,4 @@
-class Piece:
+class Tile:
     def __init__(self, x, y, radius, owner=None):
         self.x = x
         self.y = y

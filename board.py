@@ -1,8 +1,8 @@
-from pieces import Pieces
+from tiles import Tiles
 
 
 class Board:
-    def __init__(self, length, size, offset=2):
+    def __init__(self, length, size, offset):
         self.length = length
         self.size = size
         self.offset = offset
@@ -11,30 +11,33 @@ class Board:
         available_length = self.length - (self.offset * (self.size - 1))
         self.block_length = available_length // self.size
 
-        self.pieces = Pieces(self.length, self.size, self.offset)
-        self.turn = True
-        self.total_pieces = int(pow(self.size, 2))
-        self.piece_counter = 4
+        self.tiles = Tiles(self.length, self.size, self.offset)
+        self.turn = "BLACK"
+        self.total_tiles = int(pow(self.size, 2))
+        self.tile_counter = 4
 
     def click_handler(self, mouse_x, mouse_y):
-        is_success = self.pieces.click_handler(mouse_x, mouse_y, self.turn)
+        is_success = self.tiles.click_handler(mouse_x, mouse_y, self.turn)
 
         if is_success:
-            self.piece_counter += 1
-            self.turn = not self.turn
+            self.tile_counter += 1
+            if self.turn == "BLACK":
+                self.turn = "WHITE"
+            else:
+                self.turn = "BLACK"
 
     def display(self):
         # draw lines
         self.draw_board_lines()
-        # draw pieces
-        self.pieces.display()
+        # draw tiles
+        self.tiles.display()
         # handle game result display on top of everything
         self.update()
 
     def update(self):
         # when board is full
-        if self.piece_counter == self.total_pieces:
-            count_black, count_white = self.pieces.getCounts()
+        if self.tile_counter == self.total_tiles:
+            count_black, count_white = self.tiles.getCounts()
             summary_text = "Black {0} - {1} White".format(
                 count_black, count_white)
 
@@ -72,6 +75,5 @@ class Board:
         fill(255, 255, 255)
         textSize(30)
         textAlign(CENTER, CENTER)
-        text(result, self.length/2, self.length/3 * 1)
-        textAlign(CENTER, TOP)
-        text(summary, self.length/2, self.length/4 * 2)
+        text(result, self.length/2, self.length/5 * 2)
+        text(summary, self.length/2, self.length/5 * 3)
