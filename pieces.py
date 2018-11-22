@@ -74,3 +74,18 @@ class Pieces:
                 return True
 
         return False
+
+    def getCounts(self):
+        black = 0
+        white = 0
+
+        for row in self.pieces:
+            for item in row:
+                if item.getOwner() == 'BLACK':
+                    black += 1
+                elif item.getOwner() == 'WHITE':
+                    white += 1
+                else:
+                    raise AttributeError("Piece has unexpected value")
+
+        return black, white

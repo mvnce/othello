@@ -15,6 +15,7 @@ def setup():
 def draw():
     # update(mouseX, mouseY)
     background("#006800")
+    strokeWeight(WEIGHT)
     board.display()
 
 
