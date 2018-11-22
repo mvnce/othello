@@ -1,0 +1,77 @@
+class Tile:
+    def __init__(self, x, y, length):
+        self.color = None
+
+    def display(self):
+        # use processing API to draw circle
+        ellipse(x, y, width, height)
+
+    def setColor(self, color):
+        self.color = color
+    
+    def hasColor(self, color):
+        return self.color != None
+    
+    def getColor(self, color):
+        return self.color
+
+
+class Tiles:
+    def __init__(self, board_length, game_size, line_weight):
+        # store all tiles in a 2-D matrix
+        self.tiles = Tile[][]
+        # set initial four tile pieces
+
+    def display(self):
+        # draw each tile
+        for row in self.tiles:
+            for tile in row:
+                tile.display()
+
+    def click_handler(self, x, y):
+        # x and y are positions from mouse press event
+        # need to find row index and column index
+        # then mark the tile to expected color when it is available
+
+    def get_counts(self):
+        # iterate through tiles and count total of black and white tiles
+        for tile in self.tiles:
+            if tile is black:
+                black_count += 1
+            if tile is while:
+                white_count += 1
+        return black_count, white_count
+
+    def is_legal_move(self, row_index, column_index):
+        # check illegal move
+        
+        # 1. check if there is no adjacent colored tile
+        # 2. check adjacent tile color
+        # 3. check if the move can change existing tile color
+
+        # if the move doesn't meet these three criteria, then it is an illegal move
+
+
+class Board:
+    def __init__(self, board_length, game_size, line_weight):
+        self.tiles = Tiles() 
+
+    def computer_move_handler(self):
+        # if it is AI's turn
+        # it will try every possible tile to check which one can flip the most opponent tiles
+        # it will apply greedy algorithm to find the most flips
+
+    def click_handler(self, x, y):
+        # take mouse x and y positions and pass into Tiles instance
+        self.tiles.click_handler(x, y)
+
+    def update(self):
+        # handle finish status
+        # check if the board is full
+        # then calculate and draw game result and summary
+
+    def draw_board_lines(self):
+        # draw all lines
+
+    def draw_text(self, result_text, summary_text):
+        # draw result text and summary text

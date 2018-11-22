@@ -1,0 +1,16 @@
+testing for board:
+1. expect constructor can canstuct (positive case)
+2. expect click_handler can flip turn properly (positive case)
+3. expect click_handler cannot flip wrong click (negative case)
+
+testing for tiles:
+1. expect constructor can canstuct (positive case)
+2. expect click_handler return True for valid move (positive case)
+3. expect click_handler return False for invalid move (negative case)
+4. expect get_count return correct counts for white and black tiles
+
+testing for tile:
+1. expect constructor can canstuct (positive case)
+2. expect setter can set proper value (positive case)
+3. expect getter can return correct value (positive case)
+4. expect hasOwner can return correct True/False result (positive case)

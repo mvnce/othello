@@ -37,7 +37,7 @@ class Board:
     def update(self):
         # when board is full
         if self.tile_counter == self.total_tiles:
-            count_black, count_white = self.tiles.getCounts()
+            count_black, count_white = self.tiles.get_counts()
             summary_text = "Black {0} - {1} White".format(
                 count_black, count_white)
 

@@ -71,7 +71,7 @@ class Tiles:
 
         return False
 
-    def getCounts(self):
+    def get_counts(self):
         black = 0
         white = 0
 
