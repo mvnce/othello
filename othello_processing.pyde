@@ -1,10 +1,10 @@
 from board import Board
 
-BOARD_LENGTH = 600
-
+BOARD_LENGTH = 400
 SIZE = 4
+WEIGHT = 3
 
-board = Board(BOARD_LENGTH, SIZE)
+board = Board(BOARD_LENGTH, SIZE, WEIGHT)
 
 
 def setup():
@@ -13,5 +13,10 @@ def setup():
 
 
 def draw():
-    background('#006800')
+    # update(mouseX, mouseY)
+    background("#006800")
     board.display()
+
+
+def mousePressed():
+    board.click_handler(mouseX, mouseY)
