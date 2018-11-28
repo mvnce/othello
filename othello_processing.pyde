@@ -22,7 +22,6 @@ def draw():
 
 def mousePressed():
     board.click_handler(mouseX, mouseY)
-    print('clicked')
 
 # handle hover event for valid move
 #def mouseMoved():
