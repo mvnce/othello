@@ -14,7 +14,7 @@ class Board:
 
         self.tiles = Tiles(self.length, self.size, self.offset)
         self.turn = COLOR_BLACK
-        self.total_tiles = self.size * self.size
+        self.all_tiles = self.size * self.size
         self.tile_counter = 4
 
     def click_handler(self, mouse_x, mouse_y):
@@ -31,7 +31,7 @@ class Board:
 
     def update(self):
         # when board is full
-        if self.tile_counter == self.total_tiles:
+        if self.tile_counter == self.all_tiles:
             b_count, w_count = self.tiles.get_counts()
 
             summary_text = "Black {0} - {1} White".format(b_count, w_count)
