@@ -1,7 +1,7 @@
 from board import Board
 
-BOARD_LENGTH = 500
-SIZE = 4
+BOARD_LENGTH = 600
+SIZE = 8
 WEIGHT = 3
 
 board = Board(BOARD_LENGTH, SIZE, WEIGHT)
@@ -22,7 +22,3 @@ def draw():
 
 def mousePressed():
     board.click_handler(mouseX, mouseY)
-
-# handle hover event for valid move
-#def mouseMoved():
-#    print(mouseX, mouseY)

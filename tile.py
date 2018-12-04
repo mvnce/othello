@@ -1,4 +1,4 @@
-from othello_utils import COLOR_BLACK, COLOR_WHITE, HIGHLIGHT, draw_ellipse
+from othello_utils import COLOR_BLACK, COLOR_WHITE, HIGHLIGHT, draw_ellipse, draw_text
 
 
 class Tile:
@@ -8,14 +8,16 @@ class Tile:
         self.width = width
         self.height = height
         self.color = color
+        self.number = 0
 
     def display(self):
         if self.color == COLOR_WHITE:
-            draw_ellipse((255, 255, 255), self.x, self.y, self.width, self.height)
+            draw_ellipse((255, 255, 255), 1, self.x, self.y, self.width, self.height)
         elif self.color == COLOR_BLACK:
-            draw_ellipse((0, 0, 0), self.x, self.y, self.width, self.height)
+            draw_ellipse((0, 0, 0), 1, self.x, self.y, self.width, self.height)
         elif self.color == HIGHLIGHT:
-            draw_ellipse((255, 255, 0), self.x, self.y, self.width, self.height)
+            draw_ellipse((0, 0, 0), 0.3, self.x, self.y, self.width, self.height)
+            draw_text((0, 0, 0), 25, self.x, self.y, str(self.number))
 
     def set_color(self, color):
         self.color = color
@@ -29,6 +31,12 @@ class Tile:
     def get_color(self):
         return self.color
 
+    def set_number(self, number):
+        self.number = number
+
+    def clear_number(self):
+        self.number = 0
+
     def __repr__(self):
         if self.color == COLOR_BLACK:
             return 'B'
@@ -37,6 +45,6 @@ class Tile:
             return 'W'
 
         if self.color == HIGHLIGHT:
-            return 'O'
+            return str(self.number)
 
         return '-'

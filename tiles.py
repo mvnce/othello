@@ -10,14 +10,15 @@ class Tiles:
         self.tiles = list()
         self.block_length = None
         self.highlighted_coords = list()
+        self.tile_flip_lookup = dict()
 
     def initialize(self):
         len_without_offset = self.length - (self.offset * (self.size - 1))
         block_len = len_without_offset // self.size
+
         # ellipse width and height
         ellipse_len = block_len - self.offset
         center_offset = block_len // 2
-
         self.block_length = block_len
 
         # initialize all tiles
@@ -50,7 +51,7 @@ class Tiles:
 
     # return true for handling click correctly
     # return false when tile already has a tile
-    def click_handler(self, mouse_x, mouse_y, turn):
+    def move_handler(self, mouse_x, mouse_y, turn):
         row, column = None, None
 
         # decide which tile need to be updated
@@ -68,23 +69,31 @@ class Tiles:
                 break
 
         if row is not None and column is not None:
+            # prevent override existing tile
             if self.tiles[row][column].has_color():
                 return False
 
+            # prevent illegal tile move
+            if not (row, column) in self.tile_flip_lookup:
+                return False
+
             self.tiles[row][column].set_color(turn)
+            flippables = self.tile_flip_lookup[(row, column)]
+            self.flip_tiles_handler(flippables, turn)
             self.debug_print()
             return True
-        else:
-            return False
+
+        return False
 
     def find_possible_moves(self, color, highlight=False):
         for (row, col) in self.highlighted_coords:
             if self.tiles[row][col].get_color() == HIGHLIGHT:
+                print("resetting tile", row, col)
                 self.tiles[row][col].reset_color()
 
         print('\n====== EXECUTE FIND POSSIBLE MOVES ======')
         print('current player:', str(color))
-        move_lookup_dictionary = dict()
+        coordinates_lookup = dict()
 
         for row_index, row_tiles in enumerate(self.tiles):
             for col_index, tile in enumerate(row_tiles):
@@ -93,27 +102,33 @@ class Tiles:
                     continue
 
                 # evaluate flips for current tile
-                flippables, count = self.__can_flip_tiles(row_index, col_index, color)
+                coords = self.__can_flip_tiles(row_index, col_index, color)
 
                 # no flip move is invalid and should not be counted
-                if count == 0:
+                if len(coords) == 0:
                     continue
 
                 # store flippable tiles into a lookup dictionary by using original tile coord as key
-                move_lookup_dictionary[(row_index, col_index)] = flippables
+                coordinates_lookup[(row_index, col_index)] = coords
+                print((row_index, col_index), coords)
 
         if highlight:
-            for (row, col) in move_lookup_dictionary.keys():
+            for (row, col) in coordinates_lookup.keys():
+                # adding new highlighted coords
+                self.highlighted_coords.append((row, col))
                 self.tiles[row][col].set_color(HIGHLIGHT)
+                self.tiles[row][col].set_number(len(coordinates_lookup[(row, col)]))
+
+        self.tile_flip_lookup = coordinates_lookup
 
         # TODO: NEED TO REMOVE THIS DEBUGGING CODE BLOCK
         self.debug_print()
-        for (row, col) in move_lookup_dictionary.keys():
+        for (row, col) in coordinates_lookup.keys():
             print((row, col))
         print('========================================\n')
         # TODO: END DEBUGGING CODE BLOCK
 
-        return move_lookup_dictionary
+        return len(coordinates_lookup) > 0
 
     def make_computer_move(self, turn):
         for row in self.tiles:
@@ -136,16 +151,24 @@ class Tiles:
         return b_count, w_count
 
     def __can_flip_tiles(self, row, column, color):
-        l_flippables = self.loop_handler(column - 1, -1, -1, row, COLUMN, color)
-        r_flippables = self.loop_handler(column + 1, self.size, 1, row, COLUMN, color)
-        u_flippables = self.loop_handler(row - 1, -1, -1, column, ROW, color)
-        d_flippables = self.loop_handler(row + 1, self.size, 1, column, ROW, color)
+        # TODO: need to remove this block, keep it for debugging only
+        # l_flippables = self.__loop_handler(column - 1, -1, -1, row, COLUMN, color)
+        # r_flippables = self.__loop_handler(column + 1, self.size, 1, row, COLUMN, color)
+        # u_flippables = self.__loop_handler(row - 1, -1, -1, column, ROW, color)
+        # d_flippables = self.__loop_handler(row + 1, self.size, 1, column, ROW, color)
 
-        flip_total = len(l_flippables) + len(r_flippables) + len(u_flippables) + len(d_flippables)
-        print("rowIndex and colIndex", row, column, 'TOTAL:', flip_total)
-        print("L:", len(l_flippables), "R:", len(r_flippables), "U:", len(u_flippables), "D:", len(d_flippables))
+        all_coords = []
+        all_coords += self.loop_handler(column - 1, -1, -1, row, COLUMN, color)
+        all_coords += self.loop_handler(column + 1, self.size, 1, row, COLUMN, color)
+        all_coords += self.loop_handler(row - 1, -1, -1, column, ROW, color)
+        all_coords += self.loop_handler(row + 1, self.size, 1, column, ROW, color)
 
-        return {'L': l_flippables, 'R': r_flippables, 'U': u_flippables, 'D': d_flippables}, flip_total
+        # flip_total = len(l_flippables) + len(r_flippables) + len(u_flippables) + len(d_flippables)
+        print("rowIndex and colIndex", row, column, 'TOTAL:', len(all_coords))
+        # print("L:", len(l_flippables), "R:", len(r_flippables), "U:", len(u_flippables), "D:", len(d_flippables))
+
+        # return {'L': l_flippables, 'R': r_flippables, 'U': u_flippables, 'D': d_flippables}, flip_total
+        return all_coords
 
     def loop_handler(self, start, end, iter_order, fixed_index, row_or_column, color):
         coords, flag = list(), False
@@ -175,6 +198,10 @@ class Tiles:
             if flag is False:
                 del coords[:]
         return coords
+
+    def flip_tiles_handler(self, coordinates, new_color):
+        for (row, column) in coordinates:
+            self.tiles[row][column].set_color(new_color)
 
     def debug_print(self):
         print('\n++++++++++++++')

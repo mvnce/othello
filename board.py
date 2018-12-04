@@ -21,15 +21,23 @@ class Board:
         self.tiles.find_possible_moves(self.turn, True)
 
     def click_handler(self, mouse_x, mouse_y):
-        is_success = self.tiles.click_handler(mouse_x, mouse_y, self.turn)
+        is_success = self.tiles.move_handler(mouse_x, mouse_y, self.turn)
 
         if is_success:
-            # self.find_possible_moves()
-            # self.tiles.make_computer_move(COLOR_WHITE)
-            # self.tile_counter += 2
             self.tile_counter += 1
             self.change_turn()
-            self.tiles.find_possible_moves(self.turn)
+
+            if self.tiles.find_possible_moves(self.turn, True):
+                print("switch user as normal")
+            else:
+                print("no move for user:", self.turn)
+                self.change_turn()
+                if self.tiles.find_possible_moves(self.turn, True):
+                    print("switch user as normal after changing turn")
+                else:
+                    self.tile_counter = self.all_tiles
+        else:
+            print("!!! failed to move !!!")
 
     def display(self):
         self.__draw_board()
@@ -52,10 +60,8 @@ class Board:
     def __draw_board(self):
         """
         handle drawing lines
-        @param self:
         @return: None
         """
-
         # draw horizontal lines
         for i in range(1, self.size):
             x1, y1 = 0, i * self.block_length + i * self.offset
@@ -71,11 +77,10 @@ class Board:
     def __draw_text(self, result, summary):
         """
         handle drawing texts
-        @param self:
         @param result: string for indicating the game winner (ex. Black Win!)
         @param summary: string for indicating final scores (ex. Black 10 - 54 White)
         @return: None
         """
-        draw_rect(0, 0, 0, 0.75, 0, 0, self.length, self.length)
-        draw_text(255, 255, 255, 30, self.length / 2, self.length / 5 * 2, result)
-        draw_text(255, 255, 255, 30, self.length / 2, self.length / 5 * 3, summary)
+        draw_rect((0, 0, 0), 0.75, 0, 0, self.length, self.length)
+        draw_text((255, 255, 255), 30, self.length / 2, self.length / 5 * 2, result)
+        draw_text((255, 255, 255), 30, self.length / 2, self.length / 5 * 3, summary)
