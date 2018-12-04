@@ -1,6 +1,6 @@
 # constants
-COLOR_BLACK = 0
-COLOR_WHITE = 1
+COLOR_BLACK = 'B'
+COLOR_WHITE = 'W'
 
 
 #  parameters: color: (0, 0, 0), center_x, center_y, width_x, height)
