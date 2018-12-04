@@ -1,4 +1,4 @@
-from othello_utils import COLOR_BLACK, COLOR_WHITE, draw_ellipse
+from othello_utils import COLOR_BLACK, COLOR_WHITE, HIGHLIGHT, draw_ellipse
 
 
 class Tile:
@@ -14,7 +14,7 @@ class Tile:
             draw_ellipse((255, 255, 255), self.x, self.y, self.width, self.height)
         elif self.color == COLOR_BLACK:
             draw_ellipse((0, 0, 0), self.x, self.y, self.width, self.height)
-        elif self.color == 'VALID_OPTION':
+        elif self.color == HIGHLIGHT:
             draw_ellipse((255, 255, 0), self.x, self.y, self.width, self.height)
 
     def set_color(self, color):
@@ -36,7 +36,7 @@ class Tile:
         if self.color == COLOR_WHITE:
             return 'W'
 
-        if self.color == 'VALID_OPTION':
+        if self.color == HIGHLIGHT:
             return 'O'
 
         return '-'

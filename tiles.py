@@ -1,6 +1,5 @@
-from othello_utils import COLOR_BLACK, COLOR_WHITE
+from othello_utils import COLOR_BLACK, COLOR_WHITE, HIGHLIGHT, COLUMN, ROW
 from tile import Tile
-import datetime
 
 
 class Tiles:
@@ -10,7 +9,7 @@ class Tiles:
         self.offset = offset
         self.tiles = list()
         self.block_length = None
-        self.valid_move_coordinates = set()
+        self.highlighted_coords = list()
 
     def initialize(self):
         len_without_offset = self.length - (self.offset * (self.size - 1))
@@ -78,53 +77,43 @@ class Tiles:
         else:
             return False
 
-    def find_possible_moves(self, color):
+    def find_possible_moves(self, color, highlight=False):
+        for (row, col) in self.highlighted_coords:
+            if self.tiles[row][col].get_color() == HIGHLIGHT:
+                self.tiles[row][col].reset_color()
+
         print('\n====== EXECUTE FIND POSSIBLE MOVES ======')
-        print(str(color))
-        available_move_dictionary = {}
+        print('current player:', str(color))
+        move_lookup_dictionary = dict()
 
         for row_index, row_tiles in enumerate(self.tiles):
             for col_index, tile in enumerate(row_tiles):
+                # only evaluate move for empty tile
                 if self.tiles[row_index][col_index].has_color():
                     continue
-                flip_counts, flip_total = self.__can_flip_tiles(row_index, col_index, color)
-                if flip_total == 0:
+
+                # evaluate flips for current tile
+                flippables, count = self.__can_flip_tiles(row_index, col_index, color)
+
+                # no flip move is invalid and should not be counted
+                if count == 0:
                     continue
-                available_move_dictionary[(row_index, col_index)] = flip_counts
 
-        # # reset color attribute to None
-        # for (row, col) in self.valid_move_coordinates:
-        #     self.tiles[row][col].reset_color()
-        #     print('remove color for tile', row, col)
-        #
-        # # clear previous valid move coordinates
-        # del self.valid_move_coordinates[:]
-        #
-        # # print(available_move_dictionary)
-        # for (row, col) in available_move_dictionary.keys():
-        #     if not self.tiles[row][col].has_color():
-        #
-        #         self.valid_move_coordinates.append((row, col))
-        #         self.tiles[row][col].set_color('VALID_OPTION')
-        #         print('setting valid option', row, col)
-        #     else:
-        #         print('The tile has color', row, col)
+                # store flippable tiles into a lookup dictionary by using original tile coord as key
+                move_lookup_dictionary[(row_index, col_index)] = flippables
 
-        # del self.valid_move_coordinates[:]
-        self.valid_move_coordinates.clear()
+        if highlight:
+            for (row, col) in move_lookup_dictionary.keys():
+                self.tiles[row][col].set_color(HIGHLIGHT)
 
-        for (row, col) in available_move_dictionary.keys():
-            self.valid_move_coordinates.add((row, col))
-
+        # TODO: NEED TO REMOVE THIS DEBUGGING CODE BLOCK
         self.debug_print()
-
-        print('\n', datetime.datetime.now())
-        print('=====================')
-        for (row, col) in available_move_dictionary.keys():
+        for (row, col) in move_lookup_dictionary.keys():
             print((row, col))
-        print('=====================\n')
+        print('========================================\n')
+        # TODO: END DEBUGGING CODE BLOCK
 
-        return available_move_dictionary
+        return move_lookup_dictionary
 
     def make_computer_move(self, turn):
         for row in self.tiles:
@@ -146,79 +135,49 @@ class Tiles:
 
         return b_count, w_count
 
-    def __can_flip_tiles(self, row_index, col_index, color):
-        # check left
-        l_flip_count = 0
-        left_check_flag = False
-        for iter_col in range(col_index - 1, -1, -1):
-            if self.tiles[row_index][iter_col].get_color() is None:
-                l_flip_count = 0
-                break
-            elif self.tiles[row_index][iter_col].get_color() == color:
-                left_check_flag = True
-                break
-            elif self.tiles[row_index][iter_col].get_color() != color:
-                l_flip_count += 1
-        if left_check_flag is False:
-            l_flip_count = 0
+    def __can_flip_tiles(self, row, column, color):
+        l_flippables = self.loop_handler(column - 1, -1, -1, row, COLUMN, color)
+        r_flippables = self.loop_handler(column + 1, self.size, 1, row, COLUMN, color)
+        u_flippables = self.loop_handler(row - 1, -1, -1, column, ROW, color)
+        d_flippables = self.loop_handler(row + 1, self.size, 1, column, ROW, color)
 
-        # check right
-        r_flip_count = 0
-        r_check_flag = False
-        for iter_col in range(col_index + 1, self.size):
-            if self.tiles[row_index][iter_col].get_color() is None:
-                right_flip_count = 0
-                break
-            elif self.tiles[row_index][iter_col].get_color() == color:
-                r_check_flag = True
-                break
-            elif self.tiles[row_index][iter_col].get_color() != color:
-                r_flip_count += 1
-        if r_check_flag is False:
-            r_flip_count = 0
+        flip_total = len(l_flippables) + len(r_flippables) + len(u_flippables) + len(d_flippables)
+        print("rowIndex and colIndex", row, column, 'TOTAL:', flip_total)
+        print("L:", len(l_flippables), "R:", len(r_flippables), "U:", len(u_flippables), "D:", len(d_flippables))
 
-        # check up
-        u_flip_count = 0
-        u_check_flag = False
-        for iter_row in range(row_index - 1, -1, -1):
-            if self.tiles[iter_row][col_index].get_color() is None:
-                u_flip_count = 0
-                break
-            elif self.tiles[iter_row][col_index].get_color() == color:
-                u_check_flag = True
-                break
-            elif self.tiles[iter_row][col_index].get_color() != color:
-                u_flip_count += 1
-        if u_check_flag is False:
-            u_flip_count = 0
+        return {'L': l_flippables, 'R': r_flippables, 'U': u_flippables, 'D': d_flippables}, flip_total
 
-        # check down
-        d_flip_count = 0
-        d_check_flag = False
-        for iter_row in range(row_index + 1, self.size):
-            if self.tiles[iter_row][col_index].get_color() is None:
-                d_flip_count = 0
-                break
-            elif self.tiles[iter_row][col_index].get_color() == color:
-                d_check_flag = True
-                break
-            elif self.tiles[iter_row][col_index].get_color() != color:
-                d_flip_count += 1
-        if d_check_flag is False:
-            d_flip_count = 0
+    def loop_handler(self, start, end, iter_order, fixed_index, row_or_column, color):
+        coords, flag = list(), False
+        if row_or_column == 'COLUMN':
+            for iterator in range(start, end, iter_order):
+                if self.tiles[fixed_index][iterator].get_color() is None:
+                    del coords[:]
+                    break
+                elif self.tiles[fixed_index][iterator].get_color() == color:
+                    flag = True
+                    break
+                elif self.tiles[fixed_index][iterator].get_color() != color:
+                    coords.append((fixed_index, iterator))
+            if flag is False:
+                del coords[:]
 
-        flip_total = l_flip_count + r_flip_count + u_flip_count + d_flip_count
-
-        print("rowIndex and colIndex", row_index, col_index, 'TOTAL', flip_total)
-        print("L:", l_flip_count, "R:", r_flip_count, "U:", u_flip_count, "D:", d_flip_count)
-
-        return {'L': l_flip_count, 'R': r_flip_count, 'U': u_flip_count, 'D': d_flip_count}, flip_total
+        elif row_or_column == 'ROW':
+            for iterator in range(start, end, iter_order):
+                if self.tiles[iterator][fixed_index].get_color() is None:
+                    del coords[:]
+                    break
+                elif self.tiles[iterator][fixed_index].get_color() == color:
+                    flag = True
+                    break
+                elif self.tiles[iterator][fixed_index].get_color() != color:
+                    coords.append((iterator, fixed_index))
+            if flag is False:
+                del coords[:]
+        return coords
 
     def debug_print(self):
-
-        print('\n', datetime.datetime.now())
-        print('=====================')
+        print('\n++++++++++++++')
         for row in self.tiles:
             print(row)
-
-        print('=====================\n')
+        print('++++++++++++++\n')

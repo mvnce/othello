@@ -2,6 +2,11 @@
 COLOR_BLACK = 'B'
 COLOR_WHITE = 'W'
 
+HIGHLIGHT = 'HIGHLIGHT'
+
+COLUMN = 'COLUMN'
+ROW = 'ROW'
+
 
 #  parameters: color: (0, 0, 0), center_x, center_y, width_x, height)
 def draw_ellipse(color, center_x, center_y, width, height):

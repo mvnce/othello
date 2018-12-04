@@ -18,7 +18,7 @@ class Board:
         self.all_tiles = self.size * self.size
         self.tile_counter = 4
         self.possible_moves = []
-        self.tiles.find_possible_moves(self.turn)
+        self.tiles.find_possible_moves(self.turn, True)
 
     def click_handler(self, mouse_x, mouse_y):
         is_success = self.tiles.click_handler(mouse_x, mouse_y, self.turn)
