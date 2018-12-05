@@ -21,8 +21,11 @@ class Board:
     def play(self, row, col, color):
         return self.tiles.play(row, col, color)
 
+    def computer_play(self, color):
+        return self.tiles.computer_play(color)
+
     def evaluate_board_moves(self, color, highlight=False):
-        return self.tiles.evaluate_valide_moves(color, highlight)
+        return self.tiles.evaluate_valid_moves(color, highlight)
 
     def draw_board(self):
         # draw horizontal lines

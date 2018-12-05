@@ -53,13 +53,26 @@ class Tiles:
         if not (row, col) in self.tile_flip_lookup:
             return False
 
+        self.put_tile(row, col, color)
+        return True
+
+    def computer_play(self, color):
+        print('computer play: ', color)
+        print('computer play: ', self.highlighted_coords)
+        print('computer play: ', self.tile_flip_lookup)
+        best_coord, best_cnt = self.highlighted_coords[0], 0
+        for coord in self.highlighted_coords:
+            if len(self.tile_flip_lookup[coord]) > best_cnt:
+                best_coord, best_cnt = coord, len(self.tile_flip_lookup[coord])
+        self.put_tile(best_coord[0], best_coord[1], color)
+
+    def put_tile(self, row, col, color):
         self.tiles[row][col].set_color(color)
         flippables = self.tile_flip_lookup[(row, col)]
         self.flip_tiles(flippables, color)
         self.debug_print()
-        return True
 
-    def evaluate_valide_moves(self, color, highlight=False):
+    def evaluate_valid_moves(self, color, highlight=False):
         for (row, col) in self.highlighted_coords:
             if self.tiles[row][col].get_color() == COLOR_HIGHLIGHT:
                 print("resetting tile", row, col)
@@ -87,6 +100,7 @@ class Tiles:
                 print((row_index, col_index), coords)
 
         if highlight:
+            del self.highlighted_coords[:]
             for (row, col) in coordinates_lookup.keys():
                 # adding new highlighted coords
                 self.highlighted_coords.append((row, col))

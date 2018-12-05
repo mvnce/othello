@@ -23,7 +23,3 @@ def draw_text(color, size, x, y, text_content):
     textSize(size)
     textAlign(CENTER, CENTER)
     text(text_content, x, y)
-
-# def input_handler(self, message=''):
-#     from javax.swing import JOptionPane
-#     return JOptionPane.showInputDialog(frame, message)

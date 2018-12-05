@@ -2,10 +2,11 @@ from board import Board
 from player import Player
 from constants import COLOR_BLACK, COLOR_WHITE
 from draw_utils import draw_text
+from time import sleep
 
 
 class Controller:
-    def __init__(self, length, size, offset, player_name="Yogurt"):
+    def __init__(self, length, size, offset, player_name="noname"):
 
         self.length = length
         self.size = size
@@ -41,6 +42,9 @@ class Controller:
                 self.save_score_to_file()
                 self.is_saved = not self.is_saved
 
+    def set_player_name(self, name):
+        self.players[0].name = name
+
     def mouse_event_handler(self, mouse_x, mouse_y):
         row, col = self.convert_coordinate_to_position(mouse_x, mouse_y)
 
@@ -72,12 +76,15 @@ class Controller:
         return row, col
 
     def next_player(self):
-        print('SET NEXT PLAYER')
+        # switch current player index
         self.turn_index = 0 if self.turn_index == 1 else 1
-        print(self.turn_index)
         is_playable = self.board.evaluate_board_moves(self.players[self.turn_index].color, True)
         if is_playable is False:
             self.tile_cnt = self.tile_max
+
+        if self.turn_index == 1:
+            self.board.computer_play(self.players[self.turn_index].color)
+            self.next_player()
 
     def draw_score(self):
         b_count, w_count = self.board.get_counts()
