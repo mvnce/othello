@@ -1,4 +1,4 @@
-from othello_utils import COLOR_BLACK, COLOR_WHITE, HIGHLIGHT, COLUMN, ROW
+from constants import COLOR_BLACK, COLOR_WHITE, COLOR_HIGHLIGHT
 from tile import Tile
 
 
@@ -79,7 +79,7 @@ class Tiles:
 
             self.tiles[row][column].set_color(turn)
             flippables = self.tile_flip_lookup[(row, column)]
-            self.flip_tiles_handler(flippables, turn)
+            self.flip_tiles(flippables, turn)
             self.debug_print()
             return True
 
@@ -87,7 +87,7 @@ class Tiles:
 
     def find_possible_moves(self, color, highlight=False):
         for (row, col) in self.highlighted_coords:
-            if self.tiles[row][col].get_color() == HIGHLIGHT:
+            if self.tiles[row][col].get_color() == COLOR_HIGHLIGHT:
                 print("resetting tile", row, col)
                 self.tiles[row][col].reset_color()
 
@@ -116,7 +116,7 @@ class Tiles:
             for (row, col) in coordinates_lookup.keys():
                 # adding new highlighted coords
                 self.highlighted_coords.append((row, col))
-                self.tiles[row][col].set_color(HIGHLIGHT)
+                self.tiles[row][col].set_color(COLOR_HIGHLIGHT)
                 self.tiles[row][col].set_number(len(coordinates_lookup[(row, col)]))
 
         self.tile_flip_lookup = coordinates_lookup
@@ -151,55 +151,41 @@ class Tiles:
         return b_count, w_count
 
     def __can_flip_tiles(self, row, column, color):
-        # TODO: need to remove this block, keep it for debugging only
-        # l_flippables = self.__loop_handler(column - 1, -1, -1, row, COLUMN, color)
-        # r_flippables = self.__loop_handler(column + 1, self.size, 1, row, COLUMN, color)
-        # u_flippables = self.__loop_handler(row - 1, -1, -1, column, ROW, color)
-        # d_flippables = self.__loop_handler(row + 1, self.size, 1, column, ROW, color)
+        coordinates = list()
+        coordinates += self.calculate_flips(row, column, 0, -1, 0, self.size - 1, color, self.tiles)  # left
+        coordinates += self.calculate_flips(row, column, 0, 1, 0, self.size - 1, color, self.tiles)  # right
+        coordinates += self.calculate_flips(row, column, -1, 0, 0, self.size - 1, color, self.tiles)  # up
+        coordinates += self.calculate_flips(row, column, 1, 0, 0, self.size - 1, color, self.tiles)  # down
 
-        all_coords = []
-        all_coords += self.loop_handler(column - 1, -1, -1, row, COLUMN, color)
-        all_coords += self.loop_handler(column + 1, self.size, 1, row, COLUMN, color)
-        all_coords += self.loop_handler(row - 1, -1, -1, column, ROW, color)
-        all_coords += self.loop_handler(row + 1, self.size, 1, column, ROW, color)
+        coordinates += self.calculate_flips(row, column, -1, -1, 0, self.size - 1, color, self.tiles)  # up-left
+        coordinates += self.calculate_flips(row, column, -1, 1, 0, self.size - 1, color, self.tiles)  # up-right
+        coordinates += self.calculate_flips(row, column, 1, -1, 0, self.size - 1, color, self.tiles)  # down-left
+        coordinates += self.calculate_flips(row, column, 1, 1, 0, self.size - 1, color, self.tiles)  # down-right
+        return coordinates
 
-        # flip_total = len(l_flippables) + len(r_flippables) + len(u_flippables) + len(d_flippables)
-        print("rowIndex and colIndex", row, column, 'TOTAL:', len(all_coords))
-        # print("L:", len(l_flippables), "R:", len(r_flippables), "U:", len(u_flippables), "D:", len(d_flippables))
+    def calculate_flips(self, row, col, row_shf, col_shf, min_limit, max_limit, color, tiles):
+        coordinates = []  # for storing flippable (row, col) pairs
+        is_valid = False  # must find same color tile, then all found tiles are valid to be captured
 
-        # return {'L': l_flippables, 'R': r_flippables, 'U': u_flippables, 'D': d_flippables}, flip_total
-        return all_coords
+        row, col = row + row_shf, col + col_shf  # it should NOT count itself
 
-    def loop_handler(self, start, end, iter_order, fixed_index, row_or_column, color):
-        coords, flag = list(), False
-        if row_or_column == 'COLUMN':
-            for iterator in range(start, end, iter_order):
-                if self.tiles[fixed_index][iterator].get_color() is None:
-                    del coords[:]
-                    break
-                elif self.tiles[fixed_index][iterator].get_color() == color:
-                    flag = True
-                    break
-                elif self.tiles[fixed_index][iterator].get_color() != color:
-                    coords.append((fixed_index, iterator))
-            if flag is False:
-                del coords[:]
+        while (row >= min_limit and row <= max_limit) and (col >= min_limit and col <= max_limit):
+            tile_color = tiles[row][col].get_color()
 
-        elif row_or_column == 'ROW':
-            for iterator in range(start, end, iter_order):
-                if self.tiles[iterator][fixed_index].get_color() is None:
-                    del coords[:]
-                    break
-                elif self.tiles[iterator][fixed_index].get_color() == color:
-                    flag = True
-                    break
-                elif self.tiles[iterator][fixed_index].get_color() != color:
-                    coords.append((iterator, fixed_index))
-            if flag is False:
-                del coords[:]
-        return coords
+            if tile_color is None or tile_color == COLOR_HIGHLIGHT:
+                del coordinates[:]
+                break
+            elif tile_color == color:
+                is_valid = True
+                break
+            elif tile_color != color:
+                coordinates.append((row, col))
 
-    def flip_tiles_handler(self, coordinates, new_color):
+            row, col = row + row_shf, col + col_shf  # increments
+
+        return coordinates if is_valid else []
+
+    def flip_tiles(self, coordinates, new_color):
         for (row, column) in coordinates:
             self.tiles[row][column].set_color(new_color)
 

@@ -1,4 +1,5 @@
-from othello_utils import COLOR_BLACK, COLOR_WHITE, HIGHLIGHT, draw_ellipse, draw_text
+from processing_utils import draw_ellipse, draw_text
+from constants import COLOR_BLACK, COLOR_WHITE, COLOR_HIGHLIGHT
 
 
 class Tile:
@@ -15,7 +16,7 @@ class Tile:
             draw_ellipse((255, 255, 255), 1, self.x, self.y, self.width, self.height)
         elif self.color == COLOR_BLACK:
             draw_ellipse((0, 0, 0), 1, self.x, self.y, self.width, self.height)
-        elif self.color == HIGHLIGHT:
+        elif self.color == COLOR_HIGHLIGHT:
             draw_ellipse((0, 0, 0), 0.3, self.x, self.y, self.width, self.height)
             draw_text((0, 0, 0), 25, self.x, self.y, str(self.number))
 
@@ -44,7 +45,7 @@ class Tile:
         if self.color == COLOR_WHITE:
             return 'W'
 
-        if self.color == HIGHLIGHT:
+        if self.color == COLOR_HIGHLIGHT:
             return str(self.number)
 
         return '-'

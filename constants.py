@@ -1,0 +1,5 @@
+# all constants
+COLOR_BLACK = 'B'
+COLOR_WHITE = 'W'
+
+COLOR_HIGHLIGHT = 'HIGHLIGHT'

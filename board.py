@@ -1,5 +1,6 @@
 from tiles import Tiles
-from othello_utils import COLOR_WHITE, COLOR_BLACK, draw_line, draw_rect, draw_text
+from processing_utils import draw_line, draw_rect, draw_text
+from constants import COLOR_BLACK, COLOR_WHITE
 
 
 class Board:
@@ -63,7 +64,7 @@ class Board:
         @return: None
         """
         # draw horizontal lines
-        for i in range(1, self.size):
+        for i in range(1, self.size + 1):
             x1, y1 = 0, i * self.block_length + i * self.offset
             x2, y2 = self.length, y1
             draw_line(x1, y1, x2, y2)

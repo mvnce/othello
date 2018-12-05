@@ -1,13 +1,3 @@
-# constants
-COLOR_BLACK = 'B'
-COLOR_WHITE = 'W'
-
-HIGHLIGHT = 'HIGHLIGHT'
-
-COLUMN = 'COLUMN'
-ROW = 'ROW'
-
-
 #  parameters: color: (0, 0, 0), alpha, center_x, center_y, width_x, height)
 def draw_ellipse(color, alpha, center_x, center_y, width, height):
     fill(color[0], color[1], color[2], alpha)
@@ -29,3 +19,7 @@ def draw_text(color, size, x, y, text_content):
     textSize(size)
     textAlign(CENTER, CENTER)
     text(text_content, x, y)
+
+# def input_handler(self, message=''):
+#     from javax.swing import JOptionPane
+#     return JOptionPane.showInputDialog(frame, message)
