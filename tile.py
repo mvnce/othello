@@ -1,13 +1,14 @@
-from processing_utils import draw_ellipse, draw_text
+from draw_utils import draw_ellipse, draw_text
 from constants import COLOR_BLACK, COLOR_WHITE, COLOR_HIGHLIGHT
 
 
 class Tile:
-    def __init__(self, x, y, width, height, color=None):
+    def __init__(self, x, y, width, height, offset, color=None):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
+        self.offset = offset
         self.color = color
         self.number = 0
 
@@ -17,8 +18,8 @@ class Tile:
         elif self.color == COLOR_BLACK:
             draw_ellipse((0, 0, 0), 1, self.x, self.y, self.width, self.height)
         elif self.color == COLOR_HIGHLIGHT:
-            draw_ellipse((0, 0, 0), 0.3, self.x, self.y, self.width, self.height)
-            draw_text((0, 0, 0), 25, self.x, self.y, str(self.number))
+            draw_ellipse((0, 0, 0), 0.3, self.x, self.y, self.width, self.height, True)
+            draw_text((0, 0, 0), 25, self.x, self.y - self.offset, str(self.number))
 
     def set_color(self, color):
         self.color = color

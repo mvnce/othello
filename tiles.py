@@ -3,34 +3,30 @@ from tile import Tile
 
 
 class Tiles:
-    def __init__(self, length, size, offset):
+    def __init__(self, length, size, side, offset):
         self.length = length
         self.size = size
+        self.side = side
         self.offset = offset
+
         self.tiles = list()
-        self.block_length = None
         self.highlighted_coords = list()
         self.tile_flip_lookup = dict()
 
-    def initialize(self):
-        len_without_offset = self.length - (self.offset * (self.size - 1))
-        block_len = len_without_offset // self.size
-
         # ellipse width and height
-        ellipse_len = block_len - self.offset
-        center_offset = block_len // 2
-        self.block_length = block_len
+        ellipse_len = self.side - self.offset
+        center_offset = self.side // 2
 
         # initialize all tiles
         for i in range(self.size):
-            initial_y = (i * block_len) + (i + 1) * self.offset
+            initial_y = (i * self.side) + (i + 1) * self.offset
             temp_row = []
             for j in range(self.size):
-                x_position = ((j + 1) * self.offset) + (j * block_len) + center_offset - self.offset // 2
+                x_position = ((j + 1) * self.offset) + (j * self.side) + center_offset - self.offset // 2
                 y_position = initial_y + center_offset - self.offset // 2
 
                 ellipse_width = ellipse_height = ellipse_len - self.offset * 2
-                temp_row.append(Tile(x_position, y_position, ellipse_width, ellipse_height))
+                temp_row.append(Tile(x_position, y_position, ellipse_width, ellipse_height, self.offset))
 
             self.tiles.append(temp_row)
 
@@ -41,9 +37,6 @@ class Tiles:
         self.tiles[b][a].set_color(COLOR_BLACK)
         self.tiles[a][b].set_color(COLOR_BLACK)
 
-        # self.find_possible_moves(COLOR_BLACK)
-        self.debug_print()
-
     def display(self):
         for row in self.tiles:
             for tile in row:
@@ -51,41 +44,22 @@ class Tiles:
 
     # return true for handling click correctly
     # return false when tile already has a tile
-    def move_handler(self, mouse_x, mouse_y, turn):
-        row, column = None, None
+    def play(self, row, col, color):
+        # prevent override existing tile
+        if self.tiles[row][col].has_color():
+            return False
 
-        # decide which tile need to be updated
-        # handle row and column separately
-        for i in range(self.size):
-            max_y_length = (i + 1) * self.offset + (i + 1) * self.block_length
-            if mouse_y < max_y_length:
-                row = i
-                break
+        # prevent illegal tile move
+        if not (row, col) in self.tile_flip_lookup:
+            return False
 
-        for i in range(self.size):
-            max_x_length = (i + 1) * self.offset + (i + 1) * self.block_length
-            if mouse_x < max_x_length:
-                column = i
-                break
+        self.tiles[row][col].set_color(color)
+        flippables = self.tile_flip_lookup[(row, col)]
+        self.flip_tiles(flippables, color)
+        self.debug_print()
+        return True
 
-        if row is not None and column is not None:
-            # prevent override existing tile
-            if self.tiles[row][column].has_color():
-                return False
-
-            # prevent illegal tile move
-            if not (row, column) in self.tile_flip_lookup:
-                return False
-
-            self.tiles[row][column].set_color(turn)
-            flippables = self.tile_flip_lookup[(row, column)]
-            self.flip_tiles(flippables, turn)
-            self.debug_print()
-            return True
-
-        return False
-
-    def find_possible_moves(self, color, highlight=False):
+    def evaluate_valide_moves(self, color, highlight=False):
         for (row, col) in self.highlighted_coords:
             if self.tiles[row][col].get_color() == COLOR_HIGHLIGHT:
                 print("resetting tile", row, col)

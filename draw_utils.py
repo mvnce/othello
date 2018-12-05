@@ -1,5 +1,9 @@
 #  parameters: color: (0, 0, 0), alpha, center_x, center_y, width_x, height)
-def draw_ellipse(color, alpha, center_x, center_y, width, height):
+def draw_ellipse(color, alpha, center_x, center_y, width, height, disable_stroke=False):
+    if disable_stroke:
+        noStroke()
+    else:
+        stroke(0, 0, 0)
     fill(color[0], color[1], color[2], alpha)
     ellipse(center_x, center_y, width, height)
 

@@ -1,12 +1,11 @@
-from board import Board
+from controller import Controller
 
 BOARD_LENGTH = 550
 BOARD_HEIGHT = 610
-SIZE = 8
-WEIGHT = 3
+GAME_SIZE = 4
+OFFSET = 3
 
-board = Board(BOARD_LENGTH, SIZE, WEIGHT)
-
+controller = Controller(BOARD_LENGTH, GAME_SIZE, OFFSET)
 
 def setup():
     size(BOARD_LENGTH, BOARD_HEIGHT)
@@ -14,12 +13,11 @@ def setup():
 
 
 def draw():
-    # update(mouseX, mouseY)
     background("#006800")
     stroke(0, 0, 0)
-    strokeWeight(WEIGHT)
-    board.display()
+    strokeWeight(OFFSET)
+    controller.display()
 
 
 def mousePressed():
-    board.click_handler(mouseX, mouseY)
+    controller.mouse_event_handler(mouseX, mouseY)
