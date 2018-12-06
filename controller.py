@@ -2,7 +2,8 @@ from board import Board
 from player import Player
 from constants import COLOR_BLACK, COLOR_WHITE
 from draw_utils import draw_text
-from time import sleep
+import threading
+import time
 
 
 class Controller:
@@ -78,13 +79,19 @@ class Controller:
     def next_player(self):
         # switch current player index
         self.turn_index = 0 if self.turn_index == 1 else 1
-        is_playable = self.board.evaluate_board_moves(self.players[self.turn_index].color, True)
+        show_hint = True if self.turn_index == 0 else False
+        is_playable = self.board.evaluate_board_moves(self.players[self.turn_index].color, show_hint)
         if is_playable is False:
             self.tile_cnt = self.tile_max
 
         if self.turn_index == 1:
-            self.board.computer_play(self.players[self.turn_index].color)
-            self.next_player()
+            sub_thread = threading.Thread(name='computer player thread', target=self.computer_player_blocker)
+            sub_thread.start()
+
+    def computer_player_blocker(self):
+        time.sleep(3)
+        self.board.computer_play(self.players[self.turn_index].color)
+        self.next_player()
 
     def draw_score(self):
         b_count, w_count = self.board.get_counts()

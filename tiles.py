@@ -44,7 +44,7 @@ class Tiles:
 
     # return true for handling click correctly
     # return false when tile already has a tile
-    def play(self, row, col, color):
+    def human_play(self, row, col, color):
         # prevent override existing tile
         if self.tiles[row][col].has_color():
             return False
@@ -60,11 +60,16 @@ class Tiles:
         print('computer play: ', color)
         print('computer play: ', self.highlighted_coords)
         print('computer play: ', self.tile_flip_lookup)
+
+        if len(self.tile_flip_lookup) == 0:
+            return False
+
         best_coord, best_cnt = self.highlighted_coords[0], 0
         for coord in self.highlighted_coords:
             if len(self.tile_flip_lookup[coord]) > best_cnt:
                 best_coord, best_cnt = coord, len(self.tile_flip_lookup[coord])
         self.put_tile(best_coord[0], best_coord[1], color)
+        return True
 
     def put_tile(self, row, col, color):
         self.tiles[row][col].set_color(color)
@@ -99,11 +104,11 @@ class Tiles:
                 coordinates_lookup[(row_index, col_index)] = coords
                 print((row_index, col_index), coords)
 
-        if highlight:
-            del self.highlighted_coords[:]
-            for (row, col) in coordinates_lookup.keys():
-                # adding new highlighted coords
-                self.highlighted_coords.append((row, col))
+        del self.highlighted_coords[:]
+        for (row, col) in coordinates_lookup.keys():
+            # adding new highlighted coords
+            self.highlighted_coords.append((row, col))
+            if highlight:
                 self.tiles[row][col].set_color(COLOR_HIGHLIGHT)
                 self.tiles[row][col].set_number(len(coordinates_lookup[(row, col)]))
 
@@ -117,14 +122,6 @@ class Tiles:
         # TODO: END DEBUGGING CODE BLOCK
 
         return len(coordinates_lookup) > 0
-
-    def make_computer_move(self, turn):
-        for row in self.tiles:
-            for item in row:
-                if not item.has_color():
-                    item.set_color(turn)
-                    return True
-        return False
 
     def get_counts(self):
         b_count, w_count = 0, 0

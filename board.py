@@ -19,7 +19,7 @@ class Board:
         self.tiles.display()
 
     def play(self, row, col, color):
-        return self.tiles.play(row, col, color)
+        return self.tiles.human_play(row, col, color)
 
     def computer_play(self, color):
         return self.tiles.computer_play(color)
