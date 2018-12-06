@@ -11,14 +11,11 @@ class Board:
 
         self.tiles = Tiles(self.length, self.size, self.side, self.offset)
 
-        # tracking valid moves for current player
-        self.valid_moves = []
-
     def display(self):
         self.draw_board()
         self.tiles.display()
 
-    def play(self, row, col, color):
+    def human_play(self, row, col, color):
         return self.tiles.human_play(row, col, color)
 
     def computer_play(self, color):

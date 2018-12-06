@@ -57,10 +57,6 @@ class Tiles:
         return True
 
     def computer_play(self, color):
-        print('computer play: ', color)
-        print('computer play: ', self.highlighted_coords)
-        print('computer play: ', self.tile_flip_lookup)
-
         if len(self.tile_flip_lookup) == 0:
             return False
 
@@ -75,16 +71,12 @@ class Tiles:
         self.tiles[row][col].set_color(color)
         flippables = self.tile_flip_lookup[(row, col)]
         self.flip_tiles(flippables, color)
-        self.debug_print()
 
     def evaluate_valid_moves(self, color, highlight=False):
         for (row, col) in self.highlighted_coords:
             if self.tiles[row][col].get_color() == COLOR_HIGHLIGHT:
-                print("resetting tile", row, col)
                 self.tiles[row][col].reset_color()
 
-        print('\n====== EXECUTE FIND POSSIBLE MOVES ======')
-        print('current player:', str(color))
         coordinates_lookup = dict()
 
         for row_index, row_tiles in enumerate(self.tiles):
@@ -94,7 +86,7 @@ class Tiles:
                     continue
 
                 # evaluate flips for current tile
-                coords = self.__can_flip_tiles(row_index, col_index, color)
+                coords = self.can_flip_tiles(row_index, col_index, color)
 
                 # no flip move is invalid and should not be counted
                 if len(coords) == 0:
@@ -102,7 +94,6 @@ class Tiles:
 
                 # store flippable tiles into a lookup dictionary by using original tile coord as key
                 coordinates_lookup[(row_index, col_index)] = coords
-                print((row_index, col_index), coords)
 
         del self.highlighted_coords[:]
         for (row, col) in coordinates_lookup.keys():
@@ -113,14 +104,6 @@ class Tiles:
                 self.tiles[row][col].set_number(len(coordinates_lookup[(row, col)]))
 
         self.tile_flip_lookup = coordinates_lookup
-
-        # TODO: NEED TO REMOVE THIS DEBUGGING CODE BLOCK
-        self.debug_print()
-        for (row, col) in coordinates_lookup.keys():
-            print((row, col))
-        print('========================================\n')
-        # TODO: END DEBUGGING CODE BLOCK
-
         return len(coordinates_lookup) > 0
 
     def get_counts(self):
@@ -135,7 +118,7 @@ class Tiles:
 
         return b_count, w_count
 
-    def __can_flip_tiles(self, row, column, color):
+    def can_flip_tiles(self, row, column, color):
         coordinates = list()
         coordinates += self.calculate_flips(row, column, 0, -1, 0, self.size - 1, color, self.tiles)  # left
         coordinates += self.calculate_flips(row, column, 0, 1, 0, self.size - 1, color, self.tiles)  # right
@@ -173,9 +156,3 @@ class Tiles:
     def flip_tiles(self, coordinates, new_color):
         for (row, column) in coordinates:
             self.tiles[row][column].set_color(new_color)
-
-    def debug_print(self):
-        print('\n++++++++++++++')
-        for row in self.tiles:
-            print(row)
-        print('++++++++++++++\n')

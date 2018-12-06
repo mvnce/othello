@@ -25,11 +25,6 @@ class Controller:
 
         self.is_saved = False
 
-        print("Controller:", self.length)
-        print("Controller:", self.size)
-        print("Controller:", self.offset)
-        print("Controller:", self.side)
-
     def display(self):
         self.board.display()
         self.draw_score()
@@ -52,10 +47,7 @@ class Controller:
         if row is None or col is None:
             return
 
-        is_success = self.board.play(row, col, self.players[self.turn_index].color)
-        print("Controller CLICKED:", row, col, is_success)
-
-        if is_success:
+        if self.board.human_play(row, col, self.players[self.turn_index].color):
             self.tile_cnt += 1  # increase played tile counter
             self.next_player()
 
@@ -116,7 +108,7 @@ class Controller:
                 score = int(parts[-1])
                 scores.append((name, score))
         except:
-            print("file doesn't exist")
+            pass
 
         # add new scores
         if len(scores) != 0 and b_count > scores[0][1]:
